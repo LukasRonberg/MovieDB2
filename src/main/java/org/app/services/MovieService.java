@@ -43,6 +43,10 @@ public class MovieService {
         return fetchMovieDataList(url);
     }
 
+    public MovieListDTO getDanishMovies() throws Exception {
+        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte=2018-01-01");
+    }
+
     // Search movies by rating
     public MovieDTO searchMovieByRating(String rating) throws Exception {
         String url = BASE_URL + "discover/movie?api_key=" + API_KEY + "&vote_average.gte=" + rating;
@@ -66,7 +70,6 @@ public class MovieService {
         }
     }
 
-
     private MovieDTO fetchMovieData(String url) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -80,11 +83,5 @@ public class MovieService {
         } else {
             throw new Exception("Failed to fetch movie data: " + response.statusCode());
         }
-    }
-
-    // Print movie overview
-    public void printMovieOverview(int movieId) throws Exception {
-        MovieDTO movie = fetchMovieById(movieId);
-        System.out.println("Overview of the movie \"" + movie.getTitle() + "\": " + movie.getOverview());
     }
 }
