@@ -34,11 +34,6 @@ public class MovieService {
     }
 
     // Fetch movie details by ID
-    public CrewListDTO fetchCrewByMovieId(int movieId) throws Exception {
-        String url = BASE_URL + "movie/" + movieId + "/credits" +"?api_key=" + API_KEY;
-        return fetchCrewData(url);
-    }
-
 
 
     // Search movies by title
@@ -80,20 +75,7 @@ public class MovieService {
         }
     }
 
-    private CrewListDTO fetchCrewData(String url) throws Exception {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            return objectMapper.readValue(response.body(), CrewListDTO.class);
-        } else {
-            throw new Exception("Failed to fetch crew data: " + response.statusCode());
-        }
-    }
 
 
     private MovieDTO fetchMovieData(String url) throws Exception {

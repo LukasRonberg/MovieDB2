@@ -1,9 +1,10 @@
 package org.app;
 
 
-import org.app.DAOS.MovieDAO;
+import org.app.daos.MovieDAO;
 import org.app.dtos.MovieListDTO;
 import org.app.entities.Movie;
+import org.app.services.CrewService;
 import org.app.services.MovieService;
 
 
@@ -11,6 +12,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         try {
             MovieService movieService = new MovieService();
+            CrewService crewService = new CrewService();
 
 
             // metode til at oprette danske film i databasen
@@ -33,7 +35,7 @@ public class Main {
            MovieDAO movieDAO = new MovieDAO();
             for (Movie movie : movieDAO.getAll() ){
                 System.out.println(movie.getTitle() + " - THIS IS THE TITLE");
-                movieService.fetchCrewByMovieId(movie.getId().intValue()).getCast().forEach(System.out::println);
+                crewService.fetchCrewByMovieId(movie.getId().intValue()).getCast().forEach(System.out::println);
             }
 
         } catch (Exception e) {
