@@ -8,36 +8,38 @@ import org.app.services.MovieService;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
             MovieService movieService = new MovieService();
-            String releaseYear = "2014";
-            MovieListDTO movieListDTO = movieService.searchMovieByReleaseYear(releaseYear);
 
-            System.out.println("Movies released in " + releaseYear + ":");
-            MovieDAO movieDAO = new MovieDAO();
 
-            movieListDTO.getResults().forEach(movie -> {
+            // metode til at oprette danske film i databasen
+            /*MovieDAO movieDAO = new MovieDAO();
+
+            movieService.getAllDanishMoviesFromYearTillNow("2024-01-01").getResults().forEach(movie -> {
                 movieDAO.create(Movie
                         .builder()
+                        .id((long) movie.getId())
                         .title(movie.getTitle())
                         .overview(movie.getOverview())
                         .releaseDate(movie.getReleaseDate())
                         .build()
                 );
+            });*/
 
-                /*
-                System.out.println("Movie Title: " + movie.getTitle());
-                System.out.println("Overview: " + movie.getOverview());
-                System.out.println("Release Date: " + movie.getReleaseDate());
-                //System.out.println("Genres: " + movie.getGenres());
-                System.out.println();*/
-            });
 
-            movieDAO.getAll().forEach(System.out::println);
+            // metode til at finde alle crew medlemmer i databasen
+            //TODO: Opret en ny DAO klasse til at håndtere crew medlemmer samt indsætte disse i database.
+           MovieDAO movieDAO = new MovieDAO();
+            for (Movie movie : movieDAO.getAll() ){
+                System.out.println(movie.getTitle() + " - THIS IS THE TITLE");
+                movieService.fetchCrewByMovieId(movie.getId().intValue()).getCast().forEach(System.out::println);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
+
 

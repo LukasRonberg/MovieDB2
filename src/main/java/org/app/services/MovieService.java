@@ -3,6 +3,8 @@ package org.app.services;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.app.dtos.CrewDTO;
+import org.app.dtos.CrewListDTO;
 import org.app.dtos.MovieDTO;
 import org.app.dtos.MovieListDTO;
 
@@ -31,6 +33,14 @@ public class MovieService {
         return fetchMovieData(url);
     }
 
+    // Fetch movie details by ID
+    public CrewListDTO fetchCrewByMovieId(int movieId) throws Exception {
+        String url = BASE_URL + "movie/" + movieId + "/credits" +"?api_key=" + API_KEY;
+        return fetchCrewData(url);
+    }
+
+
+
     // Search movies by title
     public MovieDTO searchMovieByTitle(String title) throws Exception {
         String url = BASE_URL + "search/movie?api_key=" + API_KEY + "&query=" + title;
@@ -43,14 +53,14 @@ public class MovieService {
         return fetchMovieDataList(url);
     }
 
-    public MovieListDTO getDanishMovies() throws Exception {
-        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte=2018-01-01");
-    }
-
     // Search movies by rating
     public MovieDTO searchMovieByRating(String rating) throws Exception {
         String url = BASE_URL + "discover/movie?api_key=" + API_KEY + "&vote_average.gte=" + rating;
         return fetchMovieData(url);
+    }
+
+    public MovieListDTO getAllDanishMoviesFromYearTillNow(String year) throws Exception {
+        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte="+year);
     }
 
     // Fetch movie data from API
@@ -70,6 +80,22 @@ public class MovieService {
         }
     }
 
+    private CrewListDTO fetchCrewData(String url) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            return objectMapper.readValue(response.body(), CrewListDTO.class);
+        } else {
+            throw new Exception("Failed to fetch crew data: " + response.statusCode());
+        }
+    }
+
+
     private MovieDTO fetchMovieData(String url) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -83,5 +109,11 @@ public class MovieService {
         } else {
             throw new Exception("Failed to fetch movie data: " + response.statusCode());
         }
+    }
+
+    // Print movie overview
+    public void printMovieOverview(int movieId) throws Exception {
+        MovieDTO movie = fetchMovieById(movieId);
+        System.out.println("Overview of the movie \"" + movie.getTitle() + "\": " + movie.getOverview());
     }
 }

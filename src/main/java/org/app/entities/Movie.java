@@ -11,10 +11,13 @@ import lombok.*;
 @ToString
 public class Movie {
 
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    /*@Column(name = "original_movie_id",nullable = false)
+    private Long originalMovieId;*/
 
     @Column(name = "title",nullable = false)
     private String title;
