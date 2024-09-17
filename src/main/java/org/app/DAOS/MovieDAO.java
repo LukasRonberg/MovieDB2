@@ -1,4 +1,4 @@
-package org.app.DAOS;
+package org.app.daos;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MovieDAO implements IDAO<Movie> {
+public class MovieDAO implements org.app.DAOS.IDAO<Movie> {
     private EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("sp1movie");
     @Override
     public Movie getBytId(Integer id) {

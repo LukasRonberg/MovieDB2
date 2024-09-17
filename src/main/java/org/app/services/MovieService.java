@@ -75,9 +75,6 @@ public class MovieService {
         }
     }
 
-
-
-
     private MovieDTO fetchMovieData(String url) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
