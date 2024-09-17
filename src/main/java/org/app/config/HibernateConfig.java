@@ -2,7 +2,7 @@ package org.app.config;
 
 
 import jakarta.persistence.EntityManagerFactory;
-import org.app.entities.Person;
+import org.app.entities.Movie;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -29,7 +29,7 @@ public class HibernateConfig {
 
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
-        configuration.addAnnotatedClass(Person.class);
+        configuration.addAnnotatedClass(Movie.class);
     }
 
     private static EntityManagerFactory createEMF(boolean forTest, String DBName) {
