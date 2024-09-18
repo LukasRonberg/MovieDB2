@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,6 +26,9 @@ public class MovieDTO {
 
     @JsonProperty("vote_average")
     private double voteAverage;
+
+    @JsonProperty("genre_ids")
+    private List<Integer> genreIds;
     /*private double popularity;
     private String posterPath;*/
 }

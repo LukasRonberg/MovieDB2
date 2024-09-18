@@ -3,16 +3,19 @@ package org.app.services;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.app.dtos.CrewDTO;
-import org.app.dtos.CrewListDTO;
-import org.app.dtos.MovieDTO;
-import org.app.dtos.MovieListDTO;
+import org.app.daos.GenreDAO;
+import org.app.daos.MovieDAO;
+import org.app.dtos.*;
+import org.app.entities.Genre;
+import org.app.entities.Movie;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MovieService {
@@ -21,10 +24,13 @@ public class MovieService {
 
     private final HttpClient client;
     private final ObjectMapper objectMapper;
+    private final MovieDAO movieDAO;
+
 
     public MovieService() {
         this.client = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
+        this.movieDAO = new MovieDAO();
     }
 
     // Fetch movie details by ID
@@ -90,9 +96,46 @@ public class MovieService {
         }
     }
 
-    // Print movie overview
-    public void printMovieOverview(int movieId) throws Exception {
-        MovieDTO movie = fetchMovieById(movieId);
-        System.out.println("Overview of the movie \"" + movie.getTitle() + "\": " + movie.getOverview());
+    /*public void saveAllDanishMoviesFromYearTillNow(String startDate) throws Exception {
+        getAllDanishMoviesFromYearTillNow(startDate)
+                .getResults()
+                .forEach(movie -> {
+                    movieDAO.create(
+                            Movie.builder()
+                                    .id((long) movie.getId())
+                                    .title(movie.getTitle())
+                                    .overview(movie.getOverview())
+                                    .releaseDate(movie.getReleaseDate())
+                                    .genres(movie.)
+                                    .build()
+                    );
+                });
+    }*/
+
+    public void saveAllDanishMoviesFromYearTillNow(String startDate) throws Exception {
+        MovieListDTO movieList = getAllDanishMoviesFromYearTillNow(startDate);
+        GenreDAO genreDAO = new GenreDAO();
+
+        for (MovieDTO movieDTO : movieList.getResults()) {
+            Set<Genre> movieGenres = new HashSet<>();
+            for (int genreId : movieDTO.getGenreIds()) {
+                Genre genre = genreDAO.getBytId(genreId);
+                if (genre != null) {
+                    movieGenres.add(genre);
+                }
+            }
+
+            Movie movie = Movie.builder()
+                    .id((long) movieDTO.getId())
+                    .title(movieDTO.getTitle())
+                    .overview(movieDTO.getOverview())
+                    .releaseDate(movieDTO.getReleaseDate())
+                    .genres(movieGenres)
+                    .build();
+
+            movieDAO.create(movie);
+        }
     }
+
+
 }

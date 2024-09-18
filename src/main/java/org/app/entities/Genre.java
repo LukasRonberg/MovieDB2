@@ -1,9 +1,10 @@
 package org.app.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -11,8 +12,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode(exclude = "movies")
+
 public class Genre {
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
@@ -20,4 +22,6 @@ public class Genre {
     @Column(name = "name",nullable = false)
     private String name;
 
+    @ManyToMany(mappedBy = "genres", fetch = FetchType.EAGER)
+    private Set<Movie> movies = new HashSet<>();
 }

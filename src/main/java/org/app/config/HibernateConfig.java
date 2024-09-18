@@ -2,6 +2,7 @@ package org.app.config;
 
 
 import jakarta.persistence.EntityManagerFactory;
+import org.app.entities.Crew;
 import org.app.entities.Genre;
 import org.app.entities.Movie;
 import org.hibernate.SessionFactory;

@@ -3,21 +3,19 @@ package org.app.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "genres") // Avoids infinite recursion
+@EqualsAndHashCode(exclude = "genres") // Avoids infinite recursion
 public class Movie {
-
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
-
-    /*@Column(name = "original_movie_id",nullable = false)
-    private Long originalMovieId;*/
 
     @Column(name = "title",nullable = false)
     private String title;
@@ -27,4 +25,12 @@ public class Movie {
 
     @Column(name = "release_date",nullable = false)
     private String releaseDate;
+
+    @ManyToMany
+    @JoinTable(
+            name = "MovieGenres",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private Set<Genre> genres;
 }
