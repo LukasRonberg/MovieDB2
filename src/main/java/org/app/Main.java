@@ -3,6 +3,7 @@ package org.app;
 
 import org.app.daos.MovieDAO;
 import org.app.dtos.GenreListDTO;
+import org.app.dtos.MovieListDTO;
 import org.app.entities.Genre;
 import org.app.entities.Movie;
 import org.app.services.CrewService;
@@ -24,10 +25,12 @@ public class Main {
             //genreService.saveMovieGenresToDB();
 
             // metode til at oprette danske film i databasen
-            //movieService.saveAllDanishMoviesFromYearTillNow("2024-01-01");
-
-
-
+            MovieListDTO movieList = movieService.getAllDanishMoviesFromYearTillNow("2024-01-01");
+            //movieService.saveAllDanishMoviesFromYearTillNow(movieList);
+            //movieService.getTopTenMovies(movieList);
+            //movieService.getLowestRatedTenMovies(movieList);
+            double vote = movieService.getAverageForAllMoviesInDB(movieList);
+            System.out.println(vote);
             /*GenreListDTO genreListDTO = genreService.fetchMovieGenres();
             genreListDTO.getGenres().forEach(genre -> {
                 System.out.println(genre.getId() + ": " + genre.getName());
@@ -35,11 +38,12 @@ public class Main {
 
             //
             MovieDAO movieDAO = new MovieDAO();
-            List<Movie> movies = movieDAO.getAllWithGenres();
+            //List<Movie> movies = movieDAO.getAllWithGenres();
 
             // print alle film ud med deres genre
-            for (Movie movie : movies) {
+            /*for (Movie movie : movies) {
                 System.out.println("Movie: " + movie.getTitle());
+                System.out.println("Vote average: " + movie.getVoteAverage());
                 System.out.println("Genres:");
                 if (movie.getGenres() != null && !movie.getGenres().isEmpty()) {
                     for (Genre genre : movie.getGenres()) {
@@ -49,7 +53,7 @@ public class Main {
                     System.out.println(" - No genres available");
                 }
                 System.out.println();
-            }
+            }*/
 
 
 

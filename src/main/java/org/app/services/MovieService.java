@@ -13,9 +13,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MovieService {
@@ -112,8 +114,7 @@ public class MovieService {
                 });
     }*/
 
-    public void saveAllDanishMoviesFromYearTillNow(String startDate) throws Exception {
-        MovieListDTO movieList = getAllDanishMoviesFromYearTillNow(startDate);
+    public void saveAllDanishMoviesFromYearTillNow(MovieListDTO movieList) throws Exception {
         GenreDAO genreDAO = new GenreDAO();
 
         for (MovieDTO movieDTO : movieList.getResults()) {
@@ -130,12 +131,43 @@ public class MovieService {
                     .title(movieDTO.getTitle())
                     .overview(movieDTO.getOverview())
                     .releaseDate(movieDTO.getReleaseDate())
+                    .voteAverage(movieDTO.getVoteAverage())
                     .genres(movieGenres)
                     .build();
 
             movieDAO.create(movie);
         }
     }
+
+    public void getTopTenMovies(MovieListDTO movieList){
+        List<MovieDTO> topTenList = movieList.getResults().stream()
+                .sorted(Comparator.comparing(MovieDTO::getVoteAverage).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+        for (MovieDTO movie : topTenList){
+            System.out.println("Movie: "+movie.getTitle() + "\nRating: " + movie.getVoteAverage());
+        }
+    }
+
+    public void getLowestRatedTenMovies(MovieListDTO movieList) {
+        List<MovieDTO> lowestTenList = movieList.getResults().stream()
+                .sorted(Comparator.comparing(MovieDTO::getVoteAverage))
+                .limit(10)
+                .collect(Collectors.toList());
+
+        for (MovieDTO movie : lowestTenList) {
+            System.out.println("Movie: " + movie.getTitle() + "\nRating: " + movie.getVoteAverage());
+        }
+    }
+
+    public double getAverageForAllMoviesInDB(MovieListDTO movieList) {
+        return movieList.getResults().stream()
+                .mapToDouble(MovieDTO::getVoteAverage)
+                .average()
+                .orElse(0.0);
+    }
+
+
 
 
 }

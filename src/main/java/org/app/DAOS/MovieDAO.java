@@ -29,6 +29,15 @@ public class MovieDAO implements org.app.DAOS.IDAO<Movie> {
         }
     }
 
+
+    public List<Movie> getAllWithGenres() {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> query = em.createQuery("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.genres", Movie.class);
+            return query.getResultList();
+        }
+    }
+
+
     @Override
     public void create(Movie Movie) {
         try(EntityManager em = emf.createEntityManager()) {
