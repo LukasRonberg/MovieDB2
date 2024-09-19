@@ -4,66 +4,55 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import org.app.config.HibernateConfig;
-import org.app.entities.Movie;
-
+import org.app.entities.Crew;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MovieDAO implements org.app.DAOS.IDAO<Movie> {
+public class CrewDAO implements org.app.daos.IDAO<Crew> {
     private EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("sp1movie");
     @Override
-    public Movie getBytId(Integer id) {
+    public Crew getBytId(Integer id) {
         try(EntityManager em = emf.createEntityManager()) {
-            return em.find(Movie.class, id);
+            return em.find(Crew.class, id);
         }
     }
 
     @Override
-    public Set<Movie> getAll() {
+    public Set<Crew> getAll() {
         try(EntityManager em = emf.createEntityManager()) {
-            TypedQuery<Movie> query = em.createQuery("SELECT u FROM Movie u", Movie.class);
-            List<Movie> userList = query.getResultList();
+            TypedQuery<Crew> query = em.createQuery("SELECT u FROM Crew u", Crew.class);
+            List<Crew> userList = query.getResultList();
             return userList.stream().collect(Collectors.toSet());
         }
     }
 
-
-    public List<Movie> getAllWithGenres() {
-        try (EntityManager em = emf.createEntityManager()) {
-            TypedQuery<Movie> query = em.createQuery("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.genres", Movie.class);
-            return query.getResultList();
-        }
-    }
-
-
     @Override
-    public void create(Movie Movie) {
+    public void create(Crew crew) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.persist(Movie);
+            em.persist(crew);
             em.getTransaction().commit();
         }
     }
 
     @Override
-    public void update(Movie Movie) {
+    public void update(Crew crew) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.merge(Movie);
+            em.merge(crew);
             em.getTransaction().commit();
         }
     }
 
 
     @Override
-    public void delete(Movie Movie) {
+    public void delete(Crew crew) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.remove(Movie);
+            em.remove(crew);
             em.getTransaction().commit();
         }
     }
-
 }

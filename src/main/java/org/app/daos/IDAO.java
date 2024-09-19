@@ -1,4 +1,4 @@
-package org.app.DAOS;
+package org.app.daos;
 
 import java.util.Set;
 

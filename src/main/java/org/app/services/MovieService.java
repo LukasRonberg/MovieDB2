@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MovieService {
+public class MovieService /*implements IMovieService*/ {
     private static final String API_KEY = "9ac5e8a8f5f3ade0552bb0f6dd5fd711";//System.getenv("API_KEY");  // Replace with your TMDB API key
     private static final String BASE_URL = "https://api.themoviedb.org/3/";
 
@@ -138,7 +138,7 @@ public class MovieService {
             movieDAO.create(movie);
         }
     }
-
+/*
     public void getTopTenMovies(MovieListDTO movieList){
         List<MovieDTO> topTenList = movieList.getResults().stream()
                 .sorted(Comparator.comparing(MovieDTO::getVoteAverage).reversed())
@@ -175,6 +175,42 @@ public class MovieService {
                 .mapToDouble(MovieDTO::getVoteAverage)
                 .average()
                 .orElse(0.0);
+    }*/
+
+    public List<Movie> dbGetTopTenMovies(){
+        return movieDAO.getTopTenMovies();
+    }
+
+    public List<Movie> dbGetTopTenMostPopularMovies(){
+        return movieDAO.getTopTenMostPopularMovies();
+    }
+
+    public List<Movie> dbGetLowestRatedTenMovies() {
+        return movieDAO.getLowestRatedTenMovies();
+    }
+
+    public double dbGetAverageForAllMoviesInDB() {
+        return movieDAO.getAverageForAllMoviesInDB();
+    }
+
+
+    public Movie dbFetchMovieById(int movieId) throws Exception {
+        return movieDAO.getBytId(movieId);
+    }
+
+
+    public List<Movie> dbSearchMovieByTitle(String title) throws Exception {
+        return movieDAO.getByTitle(title);
+    }
+
+
+    public List<Movie> dbSearchMoviesByReleaseYear(String year) throws Exception {
+        return movieDAO.getByReleaseYear(year);
+    }
+
+
+    public List<Movie> dbSearchMoviesByRating(double rating) throws Exception {
+        return movieDAO.getByRating(rating);
     }
 
 
