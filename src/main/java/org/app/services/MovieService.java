@@ -149,6 +149,16 @@ public class MovieService {
         }
     }
 
+    public void getTopTenMostPopularMovies(MovieListDTO movieList){
+        List<MovieDTO> topTenList = movieList.getResults().stream()
+                .sorted(Comparator.comparing(MovieDTO::getPopularity).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+        for (MovieDTO movie : topTenList){
+            System.out.println("Movie: "+movie.getTitle() + "\nPopularity: " + movie.getPopularity());
+        }
+    }
+
     public void getLowestRatedTenMovies(MovieListDTO movieList) {
         List<MovieDTO> lowestTenList = movieList.getResults().stream()
                 .sorted(Comparator.comparing(MovieDTO::getVoteAverage))

@@ -29,6 +29,7 @@ public class Main {
             //movieService.saveAllDanishMoviesFromYearTillNow(movieList);
             //movieService.getTopTenMovies(movieList);
             //movieService.getLowestRatedTenMovies(movieList);
+            movieService.getTopTenMostPopularMovies(movieList);
             double vote = movieService.getAverageForAllMoviesInDB(movieList);
             System.out.println(vote);
             /*GenreListDTO genreListDTO = genreService.fetchMovieGenres();

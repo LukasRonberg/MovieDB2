@@ -27,6 +27,8 @@ public class MovieDTO {
     @JsonProperty("vote_average")
     private double voteAverage;
 
+    private double popularity;
+
     @JsonProperty("genre_ids")
     private List<Integer> genreIds;
     /*private double popularity;

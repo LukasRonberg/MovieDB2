@@ -29,6 +29,9 @@ public class Movie {
     @Column(name = "vote_average",nullable = false)
     private double voteAverage;
 
+    @Column(name = "popularity",nullable = false)
+    private double popularity;
+
     @ManyToMany
     @JoinTable(
             name = "MovieGenres",
