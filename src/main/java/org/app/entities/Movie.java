@@ -39,4 +39,12 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<Genre> genres;
+
+    /*@JoinTable(
+            name = "MovieCrew",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "crew_id")
+    )*/
+    @OneToMany(mappedBy = "movie", fetch = FetchType.EAGER)
+    private Set<Crew> crew;
 }

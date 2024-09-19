@@ -1,9 +1,10 @@
 package org.app.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -12,8 +13,8 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Crew {
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -25,4 +26,7 @@ public class Crew {
 
     @Column(name = "department",nullable = false)
     private String department;
+
+    @ManyToOne(/*fetch = FetchType.EAGER*/)
+    private Movie movie;
 }

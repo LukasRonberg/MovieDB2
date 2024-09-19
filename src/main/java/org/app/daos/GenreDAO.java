@@ -4,54 +4,55 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import org.app.config.HibernateConfig;
-import org.app.entities.Crew;
+import org.app.entities.Genre;
+
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CrewDAO implements org.app.DAOS.IDAO<Crew> {
+public class GenreDAO implements org.app.daos.IDAO<Genre> {
     private EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("sp1movie");
     @Override
-    public Crew getBytId(Integer id) {
+    public Genre getBytId(Integer id) {
         try(EntityManager em = emf.createEntityManager()) {
-            return em.find(Crew.class, id);
+            return em.find(Genre.class, id);
         }
     }
 
     @Override
-    public Set<Crew> getAll() {
+    public Set<Genre> getAll() {
         try(EntityManager em = emf.createEntityManager()) {
-            TypedQuery<Crew> query = em.createQuery("SELECT u FROM Crew u", Crew.class);
-            List<Crew> userList = query.getResultList();
+            TypedQuery<Genre> query = em.createQuery("SELECT u FROM Genre u", Genre.class);
+            List<Genre> userList = query.getResultList();
             return userList.stream().collect(Collectors.toSet());
         }
     }
 
     @Override
-    public void create(Crew crew) {
+    public void create(Genre genre) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.persist(crew);
+            em.persist(genre);
             em.getTransaction().commit();
         }
     }
 
     @Override
-    public void update(Crew crew) {
+    public void update(Genre genre) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.merge(crew);
+            em.merge(genre);
             em.getTransaction().commit();
         }
     }
 
 
     @Override
-    public void delete(Crew crew) {
+    public void delete(Genre genre) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.remove(crew);
+            em.remove(genre);
             em.getTransaction().commit();
         }
     }
