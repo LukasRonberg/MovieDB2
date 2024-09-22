@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import org.app.config.HibernateConfig;
 import org.app.entities.Crew;
+import org.app.entities.Movie;
 
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,33 @@ public class CrewDAO implements org.app.daos.IDAO<Crew> {
             return userList.stream().collect(Collectors.toSet());
         }
     }
+
+    public Set<Crew> getActorsOrDirectors(Movie movie, boolean showDirectors) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Crew> query;
+            if (showDirectors) {
+                query = em.createQuery("SELECT c FROM Crew c WHERE c.movie = :movie AND c.job = 'Director'", Crew.class);
+            } else {
+                query = em.createQuery("SELECT c FROM Crew c WHERE c.movie = :movie AND c.job IS NULL", Crew.class);
+            }
+
+            query.setParameter("movie", movie);
+            List<Crew> crewList = query.getResultList();
+            return crewList.stream().collect(Collectors.toSet());
+        }
+    }
+
+
+    public Set<Crew> getCrewByMovieById(Long movieId) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Crew> query = em.createQuery(
+                    "SELECT c FROM Crew c WHERE c.movie.id = :movieId", Crew.class);
+            query.setParameter("movieId", movieId);
+            List<Crew> crewList = query.getResultList();
+            return crewList.stream().collect(Collectors.toSet());
+        }
+    }
+
 
     @Override
     public void create(Crew crew) {

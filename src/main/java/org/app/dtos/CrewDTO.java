@@ -22,5 +22,8 @@ public class CrewDTO {
 
     @JsonProperty("known_for_department")
     private String department;
+
+    @JsonProperty("job")
+    private String job;
 }
 

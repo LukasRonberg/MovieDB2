@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import org.app.config.HibernateConfig;
+import org.app.entities.Crew;
 import org.app.entities.Movie;
 
 
@@ -128,10 +129,31 @@ public class MovieDAO implements org.app.daos.IDAO<Movie> {
 
 
     @Override
-    public void delete(Movie Movie) {
-        try(EntityManager em = emf.createEntityManager()) {
+    public void delete(Movie movie) {
+        /*try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.remove(Movie);
+            em.remove(movie);
+            em.getTransaction().commit();
+        }*/
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+
+            // Delete associated crew members
+            TypedQuery<Crew> crewQuery = em.createQuery(
+                    "SELECT c FROM Crew c WHERE c.movie = :movie", Crew.class);
+            crewQuery.setParameter("movie", movie);
+            List<Crew> crewList = crewQuery.getResultList();
+
+            for (Crew crew : crewList) {
+                em.remove(crew);
+            }
+
+            // Delete the movie
+            Movie movieToDelete = em.find(Movie.class, movie.getId());
+            if (movieToDelete != null) {
+                em.remove(movieToDelete);
+            }
+
             em.getTransaction().commit();
         }
     }

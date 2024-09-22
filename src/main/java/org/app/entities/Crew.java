@@ -21,11 +21,15 @@ public class Crew {
     @Column(name = "name",nullable = false)
     private String name;
 
-    @Column(name = "character",nullable = false)
+    @Column(name = "character")
     private String character;
 
-    @Column(name = "department",nullable = false)
+    @Column(name = "department")
     private String department;
+
+    @Column(name = "job")
+    private String job;
+
 
     @ManyToOne(/*fetch = FetchType.EAGER*/)
     private Movie movie;

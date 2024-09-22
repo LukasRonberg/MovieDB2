@@ -14,4 +14,7 @@ public class CrewListDTO {
 
     @JsonProperty("cast")
     private List<CrewDTO> cast;
+
+    @JsonProperty("crew")
+    private List<CrewDTO> crew;
 }
