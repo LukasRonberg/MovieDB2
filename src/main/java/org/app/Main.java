@@ -5,6 +5,7 @@ import org.app.daos.CrewDAO;
 import org.app.daos.GenreDAO;
 import org.app.daos.MovieDAO;
 import org.app.dtos.CrewDTO;
+import org.app.dtos.MovieDTO;
 import org.app.dtos.MovieListDTO;
 import org.app.entities.Crew;
 import org.app.entities.Genre;
@@ -202,9 +203,13 @@ public class Main {
 
     private static void setup(MovieService movieService, GenreService genreService, CrewService crewService) throws Exception {
         genreService.saveMovieGenresToDB();
-        MovieListDTO movieList = movieService.getAllDanishMoviesFromYearTillNow("2019-01-01");
+        List<MovieDTO> movieList = new ArrayList<>();
+
+        for (int i = 0; i < movieService.getAllDanishMoviesFromYearTillNow("2019-01-01", i+1 + "").getTotalPages(); i++) {
+            MovieListDTO movieLists = movieService.getAllDanishMoviesFromYearTillNow("2019-01-01", i+1 + "");
+            movieList.addAll(movieLists.getResults());
+        }
         movieService.saveAllDanishMoviesFromYearTillNow(movieList);
-        //metode til at oprette movie genre i databasen
 
         org.app.daos.CrewDAO crewDAO = new org.app.daos.CrewDAO();
         MovieDAO movieDAO = new MovieDAO();

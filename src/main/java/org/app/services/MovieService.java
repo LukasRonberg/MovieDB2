@@ -60,8 +60,8 @@ public class MovieService /*implements IMovieService*/ {
         return fetchMovieData(url);
     }
 
-    public MovieListDTO getAllDanishMoviesFromYearTillNow(String year) throws Exception {
-        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte="+year);
+    public MovieListDTO getAllDanishMoviesFromYearTillNow(String year, String page) throws Exception {
+        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte="+year+"&page="+page);
     }
 
     // Fetch movie data from API
@@ -97,10 +97,10 @@ public class MovieService /*implements IMovieService*/ {
     }
 
     @Transactional
-    public void saveAllDanishMoviesFromYearTillNow(MovieListDTO movieList) throws Exception {
+    public void saveAllDanishMoviesFromYearTillNow(List<MovieDTO> movieList) throws Exception {
         GenreDAO genreDAO = new GenreDAO();
 
-        for (MovieDTO movieDTO : movieList.getResults()) {
+        for (MovieDTO movieDTO : movieList) {
             Set<Genre> movieGenres = new HashSet<>();
 
             // Fetch genres from the database
