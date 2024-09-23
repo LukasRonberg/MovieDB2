@@ -11,7 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class GenreService {
-    private static final String API_KEY = "9ac5e8a8f5f3ade0552bb0f6dd5fd711";//System.getenv("API_KEY");  // Replace with your TMDB API key
+    private static final String API_KEY = System.getenv("API_KEY");
     private static final String BASE_URL = "https://api.themoviedb.org/3/";
 
     private final HttpClient client;
