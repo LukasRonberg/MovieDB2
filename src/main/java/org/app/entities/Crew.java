@@ -11,7 +11,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "movie")  // Exclude movie to avoid recursion
+@EqualsAndHashCode(exclude = "movie")  // Exclude movie to avoid recursion
 public class Crew {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

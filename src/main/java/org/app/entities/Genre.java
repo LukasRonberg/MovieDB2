@@ -22,6 +22,12 @@ public class Genre {
     @Column(name = "name",nullable = false)
     private String name;
 
+
     @ManyToMany(mappedBy = "genres", fetch = FetchType.EAGER)
     private Set<Movie> movies = new HashSet<>();
+
+    public void addMovie(Movie movie) {
+        this.movies.add(movie);
+        movie.getGenres().add(this);  // Ensures the movie has this genre in its set
+    }
 }

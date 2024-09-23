@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import org.app.config.HibernateConfig;
 import org.app.entities.Crew;
+import org.app.entities.Genre;
 import org.app.entities.Movie;
 
 
@@ -155,6 +156,16 @@ public class MovieDAO implements org.app.daos.IDAO<Movie> {
             }
 
             em.getTransaction().commit();
+        }
+    }
+
+    public List<Movie> getByGenre(Genre genre) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Movie> query = em.createQuery(
+                    "SELECT m FROM Movie m JOIN m.genres g WHERE g.id = :genreId",
+                    Movie.class);
+            query.setParameter("genreId", genre.getId());  // Compare by genre's ID
+            return query.getResultList();
         }
     }
 

@@ -10,8 +10,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "genres") // Avoids infinite recursion
-@EqualsAndHashCode(exclude = "genres") // Avoids infinite recursion
+@ToString(exclude = {"genres", "crew"}) // Avoids infinite recursion
+@EqualsAndHashCode(exclude = {"genres", "crew"}) // Avoids infinite recursion
 public class Movie {
     @Id
     @Column(name = "id", nullable = false)
@@ -32,7 +32,7 @@ public class Movie {
     @Column(name = "popularity",nullable = false)
     private double popularity;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "MovieGenres",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -47,4 +47,10 @@ public class Movie {
     )*/
     @OneToMany(mappedBy = "movie", fetch = FetchType.EAGER)
     private Set<Crew> crew;
+
+    public void addGenre(Genre genre) {
+        this.genres.add(genre);
+        genre.getMovies().add(this);  // Ensures the genre has this movie in its set
+    }
+
 }

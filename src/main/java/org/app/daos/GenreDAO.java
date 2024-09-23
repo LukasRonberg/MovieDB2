@@ -7,6 +7,7 @@ import org.app.config.HibernateConfig;
 import org.app.entities.Genre;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +27,15 @@ public class GenreDAO implements org.app.daos.IDAO<Genre> {
             TypedQuery<Genre> query = em.createQuery("SELECT u FROM Genre u", Genre.class);
             List<Genre> userList = query.getResultList();
             return userList.stream().collect(Collectors.toSet());
+        }
+    }
+
+
+    public ArrayList<Genre> getAllAsList() {
+        try(EntityManager em = emf.createEntityManager()) {
+            TypedQuery<Genre> query = em.createQuery("SELECT u FROM Genre u", Genre.class);
+            List<Genre> userList = query.getResultList();
+            return userList.stream().collect(Collectors.toCollection(ArrayList::new));
         }
     }
 
