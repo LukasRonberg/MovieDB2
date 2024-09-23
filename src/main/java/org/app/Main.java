@@ -204,9 +204,9 @@ public class Main {
     private static void setup(MovieService movieService, GenreService genreService, CrewService crewService) throws Exception {
         genreService.saveMovieGenresToDB();
         List<MovieDTO> movieList = new ArrayList<>();
-
-        for (int i = 0; i < movieService.getAllDanishMoviesFromYearTillNow("2019-01-01", i+1 + "").getTotalPages(); i++) {
-            MovieListDTO movieLists = movieService.getAllDanishMoviesFromYearTillNow("2019-01-01", i+1 + "");
+        int totalPages = movieService.getAllDanishMoviesFromYearTillNow("2022-01-01", 1 + "").getTotalPages();
+        for (int i = 1; i < totalPages; i++) {
+            MovieListDTO movieLists = movieService.getAllDanishMoviesFromYearTillNow("2022-01-01", i+1 + "");
             movieList.addAll(movieLists.getResults());
         }
         movieService.saveAllDanishMoviesFromYearTillNow(movieList);
