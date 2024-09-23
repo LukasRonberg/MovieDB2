@@ -3,6 +3,7 @@ package org.app.services;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.app.daos.GenreDAO;
 import org.app.daos.MovieDAO;
 import org.app.dtos.*;
@@ -41,9 +42,6 @@ public class MovieService /*implements IMovieService*/ {
         return fetchMovieData(url);
     }
 
-    // Fetch movie details by ID
-
-
     // Search movies by title
     public MovieDTO searchMovieByTitle(String title) throws Exception {
         String url = BASE_URL + "search/movie?api_key=" + API_KEY + "&query=" + title;
@@ -62,8 +60,8 @@ public class MovieService /*implements IMovieService*/ {
         return fetchMovieData(url);
     }
 
-    public MovieListDTO getAllDanishMoviesFromYearTillNow(String year) throws Exception {
-        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte="+year);
+    public MovieListDTO getAllDanishMoviesFromYearTillNow(String year, String page) throws Exception {
+        return fetchMovieDataList(BASE_URL + "discover/movie?api_key=" + API_KEY +"&with_original_language=da&primary_release_date.gte="+year+"&page="+page);
     }
 
     // Fetch movie data from API
@@ -98,84 +96,43 @@ public class MovieService /*implements IMovieService*/ {
         }
     }
 
-    /*public void saveAllDanishMoviesFromYearTillNow(String startDate) throws Exception {
-        getAllDanishMoviesFromYearTillNow(startDate)
-                .getResults()
-                .forEach(movie -> {
-                    movieDAO.create(
-                            Movie.builder()
-                                    .id((long) movie.getId())
-                                    .title(movie.getTitle())
-                                    .overview(movie.getOverview())
-                                    .releaseDate(movie.getReleaseDate())
-                                    .genres(movie.)
-                                    .build()
-                    );
-                });
-    }*/
-
-    public void saveAllDanishMoviesFromYearTillNow(MovieListDTO movieList) throws Exception {
+    @Transactional
+    public void saveAllDanishMoviesFromYearTillNow(List<MovieDTO> movieList) throws Exception {
         GenreDAO genreDAO = new GenreDAO();
 
-        for (MovieDTO movieDTO : movieList.getResults()) {
+        for (MovieDTO movieDTO : movieList) {
             Set<Genre> movieGenres = new HashSet<>();
+
+            // Fetch genres from the database
             for (int genreId : movieDTO.getGenreIds()) {
                 Genre genre = genreDAO.getBytId(genreId);
+                //System.out.println("Genre: " + genre);
                 if (genre != null) {
                     movieGenres.add(genre);
                 }
             }
 
+            // Create a new Movie entity
             Movie movie = Movie.builder()
                     .id((long) movieDTO.getId())
                     .title(movieDTO.getTitle())
                     .overview(movieDTO.getOverview())
                     .releaseDate(movieDTO.getReleaseDate())
                     .voteAverage(movieDTO.getVoteAverage())
-                    .genres(movieGenres)
+                    .genres(new HashSet<>()) // Initialize genres as empty set
                     .build();
 
+            // Set the relationship properly
+            for (Genre genre : movieGenres) {
+                movie.addGenre(genre); // Ensure bidirectional relationship
+                //genre.addMovie(movie); // Ensure bidirectional relationship
+            }
+
+            // Save the movie using DAO
             movieDAO.create(movie);
         }
     }
-/*
-    public void getTopTenMovies(MovieListDTO movieList){
-        List<MovieDTO> topTenList = movieList.getResults().stream()
-                .sorted(Comparator.comparing(MovieDTO::getVoteAverage).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
-        for (MovieDTO movie : topTenList){
-            System.out.println("Movie: "+movie.getTitle() + "\nRating: " + movie.getVoteAverage());
-        }
-    }
 
-    public void getTopTenMostPopularMovies(MovieListDTO movieList){
-        List<MovieDTO> topTenList = movieList.getResults().stream()
-                .sorted(Comparator.comparing(MovieDTO::getPopularity).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
-        for (MovieDTO movie : topTenList){
-            System.out.println("Movie: "+movie.getTitle() + "\nPopularity: " + movie.getPopularity());
-        }
-    }
-
-    public void getLowestRatedTenMovies(MovieListDTO movieList) {
-        List<MovieDTO> lowestTenList = movieList.getResults().stream()
-                .sorted(Comparator.comparing(MovieDTO::getVoteAverage))
-                .limit(10)
-                .collect(Collectors.toList());
-
-        for (MovieDTO movie : lowestTenList) {
-            System.out.println("Movie: " + movie.getTitle() + "\nRating: " + movie.getVoteAverage());
-        }
-    }
-
-    public double getAverageForAllMoviesInDB(MovieListDTO movieList) {
-        return movieList.getResults().stream()
-                .mapToDouble(MovieDTO::getVoteAverage)
-                .average()
-                .orElse(0.0);
-    }*/
 
     public List<Movie> dbGetTopTenMovies(){
         return movieDAO.getTopTenMovies();
@@ -211,6 +168,10 @@ public class MovieService /*implements IMovieService*/ {
 
     public List<Movie> dbSearchMoviesByRating(double rating) throws Exception {
         return movieDAO.getByRating(rating);
+    }
+
+    public List<Movie> dbSearchMoviesByGenre(Genre genre) throws Exception {
+        return movieDAO.getByGenre(genre);
     }
 
 

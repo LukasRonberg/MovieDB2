@@ -2,17 +2,18 @@ package org.app;
 
 
 import org.app.daos.CrewDAO;
+import org.app.daos.GenreDAO;
 import org.app.daos.MovieDAO;
 import org.app.dtos.CrewDTO;
+import org.app.dtos.MovieDTO;
 import org.app.dtos.MovieListDTO;
 import org.app.entities.Crew;
+import org.app.entities.Genre;
 import org.app.entities.Movie;
 import org.app.services.*;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 
 
 public class Main {
@@ -27,8 +28,9 @@ public class Main {
 
 
             //setup
-            //todo: kun såfremt at databasen er tom
-            //setup(movieService, genreService, crewService);
+            if(movieDAO.getAll().isEmpty()){
+                setup(movieService, genreService, crewService);
+            }
 
 
             while (true) {
@@ -42,45 +44,25 @@ public class Main {
                 System.out.println("3. Fetch lowest rated 10 movies");
                 System.out.println("4. Fetch top 10 most popular movies");
                 System.out.println("5. Fetch average rating for all movies in database");
-                System.out.println("6. Fetch by release year");
+                System.out.println("6. Fetch by release year (WIP)");
                 System.out.println("7. Fetch by rating");
+                System.out.println("8. Fetch by Genre");
                 System.out.println("0. Exit");
                 System.out.println("Please select an option:");
                 switch (scanner.nextInt()) {
                     case 1:
                         System.out.println("Enter movie title:");
                         String title = scanner.next();
-                        //movieService.dbSearchMovieByTitle(title).forEach(System.out::println);
-                        List<Movie> movies = movieService.dbSearchMovieByTitle(title);
-                        if (movies.isEmpty()) {
-                            System.out.println("No movies found with the title.");
-                        } else {
-                            for (int i = 0; i < movies.size(); i++) {
-                                System.out.println((i + 1) + ". " + movies.get(i));
-                            }
-
-                            System.out.println("Select a movie by number:");
-                            int choice = scanner.nextInt();
-
-                            if (choice >= 1 && choice <= movies.size()) {
-                                Movie selectedMovie = movies.get(choice - 1);
-                                showMovieOptions(selectedMovie, scanner, movieDAO,crewDAO);
-                            } else {
-                                System.out.println("Invalid selection.");
-                            }
-                        }
+                        movieActionLoop(movieService.dbSearchMovieByTitle(title), scanner, movieDAO, crewDAO);
                         break;
                     case 2:
-                        movieService.dbGetTopTenMovies().forEach(System.out::println);
-                        ;
+                        movieActionLoop(movieService.dbGetTopTenMovies(), scanner, movieDAO, crewDAO);
                         break;
                     case 3:
-                        movieService.dbGetLowestRatedTenMovies().forEach(System.out::println);
-                        ;
+                        movieActionLoop(movieService.dbGetLowestRatedTenMovies(), scanner, movieDAO, crewDAO);
                         break;
                     case 4:
-                        movieService.dbGetTopTenMostPopularMovies().forEach(System.out::println);
-                        ;
+                        movieActionLoop(movieService.dbGetTopTenMostPopularMovies(), scanner, movieDAO, crewDAO);
                         break;
                     case 5:
                         System.out.println(movieService.dbGetAverageForAllMoviesInDB());
@@ -88,14 +70,27 @@ public class Main {
                     case 6:
                         System.out.println("Enter release year:");
                         String year = scanner.next();
-                        movieService.dbSearchMoviesByReleaseYear(year).forEach(System.out::println);
-                        ;
+                        movieActionLoop(movieService.dbSearchMoviesByReleaseYear(year), scanner, movieDAO, crewDAO);
                         break;
                     case 7:
                         System.out.println("Enter min rating:");
                         double rating = scanner.nextDouble();
-                        movieService.dbSearchMoviesByRating(rating).forEach(System.out::println);
-                        ;
+                        movieActionLoop(movieService.dbSearchMoviesByRating(rating), scanner, movieDAO, crewDAO);
+                        break;
+                    case 8:
+                        GenreDAO genreDAO = new GenreDAO();
+                        ArrayList<Genre> genres = genreDAO.getAllAsList();
+                        System.out.println("Select genre:");
+                        for (int i = 0; i < genres.size(); i++) {
+                            System.out.println((i + 1) + ". " + genres.get(i).getName());
+                        }
+                        System.out.println("Select a genre by number:");
+                        int choice = scanner.nextInt();
+
+                        if (choice >= 1 && choice <= genres.size()) {
+                            Genre selectedMovie = genres.get(choice - 1);
+                            movieActionLoop(movieService.dbSearchMoviesByGenre(selectedMovie), scanner, movieDAO,crewDAO);
+                        }
                         break;
                     case 0: // exit
                         System.exit(0);
@@ -109,8 +104,32 @@ public class Main {
         }
     }
 
+    private static void movieActionLoop(List<Movie> movies, Scanner scanner, MovieDAO movieDAO, CrewDAO crewDAO) {
+        if (movies.isEmpty()) {
+            System.out.println("No movies found with the title.");
+        } else {
+            for (int i = 0; i < movies.size(); i++) {
+                System.out.println((i + 1) + ". " + movies.get(i).getTitle() + " (" + movies.get(i).getReleaseDate() + ")");
+            }
+
+            System.out.println("Select a movie by number:");
+            int choice = scanner.nextInt();
+
+            if (choice >= 1 && choice <= movies.size()) {
+                Movie selectedMovie = movies.get(choice - 1);
+                showMovieOptions(selectedMovie, scanner, movieDAO,crewDAO);
+            } else {
+                System.out.println("Invalid selection.");
+            }
+        }
+    }
+
     private static void showMovieOptions(Movie selectedMovie, Scanner scanner, MovieDAO movieDAO, CrewDAO crewDAO) {
-        System.out.println("\n1. Update movie \n2. Delete movie \n3. Show directors \n4. Show actors \n5. Cancel");
+        while(true){
+        System.out.println("\nSelected movie: " + selectedMovie.getTitle() + " (" + selectedMovie.getReleaseDate() + ")"
+                + "\n - " + selectedMovie.getVoteAverage() + " rating" + "\n - " + selectedMovie.getPopularity() + " popularity"
+        + "\n - overview: " + selectedMovie.getOverview());
+        System.out.println("\n1. Update movie \n2. Delete movie \n3. Show directors \n4. Show actors \n0. Cancel");
 
         int option = scanner.nextInt();
         switch (option) {
@@ -126,11 +145,13 @@ public class Main {
             case 4:
                 showActors(selectedMovie, crewDAO);
                 break;
-            case 5:
+            case 0:
                 System.out.println("Returning...");
-                break;
+                return;
+                //break;
             default:
                 System.out.println("Invalid option. Try again.");
+        }
         }
     }
 
@@ -181,15 +202,19 @@ public class Main {
 
 
     private static void setup(MovieService movieService, GenreService genreService, CrewService crewService) throws Exception {
-        MovieListDTO movieList = movieService.getAllDanishMoviesFromYearTillNow("2024-01-01");
-        movieService.saveAllDanishMoviesFromYearTillNow(movieList);
-        //metode til at oprette movie genre i databasen
         genreService.saveMovieGenresToDB();
+        List<MovieDTO> movieList = new ArrayList<>();
+        int totalPages = movieService.getAllDanishMoviesFromYearTillNow("2022-01-01", 1 + "").getTotalPages();
+        for (int i = 1; i < totalPages; i++) {
+            MovieListDTO movieLists = movieService.getAllDanishMoviesFromYearTillNow("2022-01-01", i+1 + "");
+            movieList.addAll(movieLists.getResults());
+        }
+        movieService.saveAllDanishMoviesFromYearTillNow(movieList);
 
         org.app.daos.CrewDAO crewDAO = new org.app.daos.CrewDAO();
         MovieDAO movieDAO = new MovieDAO();
         for (Movie movie : movieDAO.getAll()) {
-            System.out.println(movie.getTitle() + " - THIS IS THE TITLE");
+            //System.out.println(movie.getTitle() + " - THIS IS THE TITLE");
             crewService.fetchCrewByMovieId(movie.getId().intValue()).getCast().forEach(crew -> {
                 crewDAO.create(Crew.builder()
                         .name(crew.getName())
